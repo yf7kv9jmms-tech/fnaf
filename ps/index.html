@@ -264,6 +264,32 @@
             const script = document.createElement('script');
             script.src = 'src/Runtime.js';
             script.onload = () => {
+                
+                // PATCH: Prevent freeze on missing shop images
+                (function() {
+                    if (typeof Mi !== 'undefined' && Mi.prototype && Mi.prototype.Ol) {
+                        var originalOl = Mi.prototype.Ol;
+                        Mi.prototype.Ol = function(a, b) {
+                            try {
+                                originalOl.call(this, a, b);
+                            } catch (e) {
+                                if (e.message && e.message.includes("Cannot read properties of null")) {
+                                    console.warn("Missing image for object, using placeholder:", this);
+                                    this.I = 32;
+                                    this.H = 32;
+                                    this.ia = 0;
+                                    this.ja = 0;
+                                } else {
+                                    throw e;
+                                }
+                            }
+                        };
+                        console.log("Patch applied: Missing image handler");
+                    } else {
+                        console.warn("Patch failed: Mi.prototype.Ol not found");
+                    }
+                })();
+                
                 new Runtime("MMFCanvas", runtimecanvas);
             };
             document.getElementById('MMFCanvas').style.display = 'block';
