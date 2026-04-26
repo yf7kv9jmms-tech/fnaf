@@ -3,324 +3,294 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FNAF Launcher</title>
+  <title>TERMINAL://FNAF_OVERRIDE</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap');
+
     :root {
-      --bg1: #0b1020;
-      --bg2: #161d38;
-      --bg3: #251548;
-      --text: #f3f6ff;
-      --muted: #b9c3e8;
-      --card: rgba(255, 255, 255, 0.08);
-      --card-border: rgba(255, 255, 255, 0.16);
-      --btnA: #e94560;
-      --btnB: #ff6b6b;
-      --btnC: #8b6dff;
-      --shadow: 0 22px 45px rgba(0, 0, 0, 0.42);
+      --matrix-green: #00ff41;
+      --dark-glow: #003b00;
+      --bg-black: #050505;
+      --font-main: 'Fira Code', monospace;
     }
 
     * {
       box-sizing: border-box;
+      cursor: crosshair;
     }
 
     html, body {
       margin: 0;
-      min-height: 100%;
-      font-family: "Segoe UI", Inter, Arial, sans-serif;
-      color: var(--text);
-    }
-
-    body {
-      display: grid;
-      place-items: center;
-      padding: 20px;
-      overflow-x: hidden;
-      background:
-        radial-gradient(900px 600px at 10% 10%, rgba(233, 69, 96, 0.18), transparent 60%),
-        radial-gradient(850px 650px at 90% 0%, rgba(139, 109, 255, 0.2), transparent 60%),
-        linear-gradient(150deg, var(--bg1), var(--bg2) 45%, var(--bg3));
-      animation: hueShift 16s ease-in-out infinite alternate;
-    }
-
-    @keyframes hueShift {
-      from { filter: hue-rotate(0deg); }
-      to { filter: hue-rotate(16deg); }
-    }
-
-    .orbs {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
+      height: 100%;
+      background-color: var(--bg-black);
+      color: var(--matrix-green);
+      font-family: var(--font-main);
       overflow: hidden;
     }
 
-    .orb {
+    /* Matrix Rain Canvas */
+    #canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    /* CRT Scanline Effect */
+    body::before {
+      content: " ";
+      display: block;
       position: absolute;
-      width: 260px;
-      height: 260px;
-      border-radius: 50%;
-      filter: blur(50px);
-      opacity: 0.24;
-      animation: float 14s ease-in-out infinite;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                  linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+      z-index: 100;
+      background-size: 100% 3px, 3px 100%;
+      pointer-events: none;
+      opacity: 0.4;
     }
 
-    .orb.one { background: #e94560; top: -70px; left: -70px; }
-    .orb.two { background: #8b6dff; top: 10%; right: -90px; animation-delay: -4s; }
-    .orb.three { background: #ff6b6b; bottom: -85px; left: 20%; animation-delay: -8s; }
-
-    @keyframes float {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(20px, -20px) scale(1.06); }
+    /* Opening Boot Sequence Overlay */
+    #boot-sequence {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-black);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 40px;
+      font-size: 1.1rem;
+      line-height: 1.5;
+      overflow: hidden;
     }
 
+    .boot-line {
+      margin: 0;
+      opacity: 0;
+      animation: fadeIn 0.1s forwards;
+    }
+
+    @keyframes fadeIn { to { opacity: 1; } }
+
+    /* Main App Interface */
     .app {
       position: relative;
-      z-index: 1;
-      width: min(980px, 100%);
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      padding: 26px;
-      text-align: center;
-      transform: translateY(14px);
+      z-index: 10;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       opacity: 0;
-      animation: appIn 700ms cubic-bezier(.2,.85,.2,1) forwards;
+      transition: opacity 1.5s ease;
     }
 
-    @keyframes appIn {
-      to { transform: translateY(0); opacity: 1; }
+    .terminal-box {
+      width: min(1000px, 95vw);
+      background: rgba(0, 15, 0, 0.85);
+      border: 1px solid var(--matrix-green);
+      box-shadow: 0 0 20px var(--dark-glow);
+      padding: 30px;
+      position: relative;
     }
 
     h1 {
+      font-size: 2.2rem;
+      text-transform: uppercase;
       margin: 0;
-      font-size: clamp(1.8rem, 2.8vw, 2.5rem);
-      letter-spacing: 0.4px;
-    }
-
-    .subtitle {
-      margin: 8px 0 20px;
-      color: var(--muted);
-      font-size: 0.98rem;
+      letter-spacing: 5px;
+      border-bottom: 2px solid var(--matrix-green);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px var(--matrix-green);
+      animation: flicker 3s infinite;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 15px;
     }
 
+    /* Hacker Buttons */
     .game-btn {
+      background: transparent;
+      border: 1px solid var(--matrix-green);
+      color: var(--matrix-green);
+      padding: 15px;
+      font-family: var(--font-main);
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
       position: relative;
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 13px;
-      padding: 14px 16px;
-      width: 100%;
-      color: #fff;
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: 0.2px;
-      cursor: pointer;
-      background: linear-gradient(135deg, var(--btnA), var(--btnB) 55%, var(--btnC));
-      transition: transform 0.18s ease, box-shadow 0.22s ease, filter 0.22s ease, border-color 0.22s ease;
-      animation: btnIn 650ms cubic-bezier(.2,.85,.2,1) both;
-    }
-
-    .game-btn::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(110deg, transparent, rgba(255,255,255,0.24), transparent);
-      transform: translateX(-120%);
-      transition: transform 0.55s ease;
-      pointer-events: none;
     }
 
     .game-btn:hover {
-      transform: translateY(-3px);
-      filter: brightness(1.07);
-      border-color: rgba(255, 255, 255, 0.36);
-      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28);
+      background: var(--matrix-green);
+      color: var(--bg-black);
+      box-shadow: 0 0 15px var(--matrix-green);
+      transform: translateY(-2px);
     }
 
-    .game-btn:hover::after {
-      transform: translateX(120%);
+    .game-btn::before {
+      content: "[ ";
+    }
+    .game-btn::after {
+      content: " ]";
     }
 
-    .game-btn:active {
-      transform: translateY(0) scale(0.995);
+    .status-bar {
+      margin-top: 20px;
+      font-size: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      opacity: 0.7;
     }
 
-    .game-btn:nth-child(1) { animation-delay: 0.06s; }
-    .game-btn:nth-child(2) { animation-delay: 0.12s; }
-    .game-btn:nth-child(3) { animation-delay: 0.18s; }
-    .game-btn:nth-child(4) { animation-delay: 0.24s; }
-    .game-btn:nth-child(5) { animation-delay: 0.30s; }
-    .game-btn:nth-child(6) { animation-delay: 0.36s; }
-    .game-btn:nth-child(7) { animation-delay: 0.42s; }
-    .game-btn:nth-child(8) { animation-delay: 0.48s; }
-
-    @keyframes btnIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .note {
-      margin-top: 14px;
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
-
-    .ripple {
-      position: absolute;
-      border-radius: 50%;
-      transform: scale(0);
-      animation: ripple 550ms linear;
-      background: rgba(255, 255, 255, 0.35);
-      pointer-events: none;
-    }
-
-    @keyframes ripple {
-      to {
-        transform: scale(3.3);
-        opacity: 0;
-      }
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 100% { opacity: 1; }
+      20%, 21.999%, 63% { opacity: 0.3; }
     }
   </style>
 </head>
 <body>
-  <div class="orbs" aria-hidden="true">
-    <div class="orb one"></div>
-    <div class="orb two"></div>
-    <div class="orb three"></div>
-  </div>
 
-  <main class="app">
-    <h1>FNAF Launcher</h1>
-    <p class="subtitle">Pick a title to launch it in a popup iframe.</p>
+  <canvas id="canvas"></canvas>
 
-    <section class="grid">
-      <button class="game-btn" onclick="openFNAF1(event)">Open FNAF 1</button>
-      <button class="game-btn" onclick="openFNAF2(event)">Open FNAF 2</button>
-      <button class="game-btn" onclick="openFNAF3(event)">Open FNAF 3</button>
-      <button class="game-btn" onclick="openFNAF4(event)">Open FNAF 4</button>
-      <button class="game-btn" onclick="openFNAFWorld(event)">Open FNAF World</button>
-      <button class="game-btn" onclick="openSisterLocation(event)">Open Sister Location</button>
-      <button class="game-btn" onclick="openPizzeriaSimulator(event)">Open Pizzeria Simulator (Lag Til After Minigame)</button>
-      <button class="game-btn" onclick="openUCN(event)">Open Ultimate Custom Night</button>
-    </section>
+  <!-- Initial Boot Screen -->
+  <div id="boot-sequence"></div>
 
-    <p class="note">If nothing opens, allow popups for this site.</p>
+  <!-- Main Terminal UI -->
+  <main class="app" id="main-ui">
+    <div class="terminal-box">
+      <h1>FNAF_ACCESS_GRANTED</h1>
+      
+      <section class="grid">
+        <button class="game-btn" onclick="openFNAF1()">Initialize_FNAF_1</button>
+        <button class="game-btn" onclick="openFNAF2()">Initialize_FNAF_2</button>
+        <button class="game-btn" onclick="openFNAF3()">Initialize_FNAF_3</button>
+        <button class="game-btn" onclick="openFNAF4()">Initialize_FNAF_4</button>
+        <button class="game-btn" onclick="openFNAFWorld()">Run_FNAF_World</button>
+        <button class="game-btn" onclick="openSisterLocation()">Load_Sister_Loc</button>
+        <button class="game-btn" onclick="openPizzeriaSimulator()">Exec_Pizzeria_Sim</button>
+        <button class="game-btn" onclick="openUCN()">Deploy_UCN</button>
+      </section>
+
+      <div class="status-bar">
+        <span>STATUS: ENCRYPTED</span>
+        <span>LOCATION: FAZBEAR_SERVER_7</span>
+        <span>UID: 87-SPRINGTRAP</span>
+      </div>
+    </div>
   </main>
 
   <script>
-    // Same method kept: window.open() -> create iframe -> set src.
-    function openInIframe(url) {
+    // 1. Matrix Rain Implementation
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%\"'#&_(),.;:?!\\|{}<>[]^~";
+    const fontSize = 16;
+    const columns = canvas.width / fontSize;
+    const rainDrops = Array.from({ length: columns }).fill(1);
+
+    function drawMatrix() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#0F0';
+      ctx.font = fontSize + 'px monospace';
+
+      for (let i = 0; i < rainDrops.length; i++) {
+        const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+        ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+        if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          rainDrops[i] = 0;
+        }
+        rainDrops[i]++;
+      }
+    }
+    setInterval(drawMatrix, 35);
+
+    // 2. Opening Boot Sequence
+    const bootContainer = document.getElementById('boot-sequence');
+    const logs = [
+      "> INITIALIZING BOOT PROTOCOL...",
+      "> BYPASSING FAZBEAR SECURITY FIREWALL...",
+      "> LOCATING SERVER NODES...",
+      "> MOUNTING VIRTUAL DISK: /DEV/FNAF/GAMES",
+      "> DECRYPTING ASSETS...",
+      "> HIJACKING PACKET STREAM...",
+      "> CONNECTION SECURE.",
+      "> WELCOME, AFTON."
+    ];
+
+    async function runBoot() {
+      for (const log of logs) {
+        const p = document.createElement('p');
+        p.className = 'boot-line';
+        p.textContent = log;
+        bootContainer.appendChild(p);
+        await new Promise(r => setTimeout(r, 400));
+      }
+      setTimeout(() => {
+        bootContainer.style.display = 'none';
+        document.getElementById('main-ui').style.opacity = '1';
+      }, 500);
+    }
+    runBoot();
+
+    // 3. Core Launcher Logic (Preserved)
+    function openInIframe(name, url) {
       var win = window.open();
       if (!win) {
-        alert("Popup blocked! Please allow popups for this site.");
+        alert("TERMINAL ERROR: POPUP BLOCKED. GRANT ACCESS.");
         return;
       }
 
-      // Loading screen in popup before iframe fades in.
       win.document.open();
-      win.document.write(
-        "<!DOCTYPE html><html><head><title>Loading...</title><meta charset='UTF-8'>" +
-        "<style>" +
-        "html,body{margin:0;height:100%;overflow:hidden;background:#0d1020;color:#f3f6ff;font-family:Segoe UI,Arial,sans-serif;}" +
-        ".loader{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;" +
-        "background:radial-gradient(circle at 25% 20%,#4c1f4a,transparent 55%),linear-gradient(145deg,#0b1020,#1a2140);" +
-        "transition:opacity .45s ease;z-index:10;}" +
-        ".spinner{width:54px;height:54px;border:4px solid rgba(255,255,255,.2);border-top-color:#ff7a92;border-radius:50%;animation:spin .9s linear infinite;}" +
-        ".txt{font-size:14px;opacity:.92;letter-spacing:.2px;}" +
-        "@keyframes spin{to{transform:rotate(360deg)}}" +
-        "iframe{width:100%;height:100%;border:none;opacity:0;transition:opacity .35s ease;}" +
-        "</style></head><body>" +
-        "<div id='loader' class='loader'><div class='spinner'></div><div class='txt'>Loading game...</div></div>" +
-        "</body></html>"
-      );
+      win.document.write(`
+        <html><head><title>ACCESSING://${name.toUpperCase()}</title>
+        <style>
+          body { background: #000; color: #0f0; font-family: 'Courier New', monospace; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+          .loader { border: 1px solid #0f0; padding: 20px; box-shadow: 0 0 10px #0f0; }
+          iframe { width: 100vw; height: 100vh; border: none; display: none; }
+        </style></head>
+        <body>
+          <div id="loading" class="loader">TUNNELING TO NODE... PLEASE WAIT.</div>
+          <iframe id="frame" src="${url}"></iframe>
+          <script>
+            const f = document.getElementById('frame');
+            f.onload = () => {
+              document.getElementById('loading').style.display = 'none';
+              f.style.display = 'block';
+            };
+          <\/script>
+        </body></html>
+      `);
       win.document.close();
-
-      var iframe = win.document.createElement("iframe");
-      iframe.style.width = "100%";
-      iframe.style.height = "100%";
-      iframe.style.border = "none";
-      iframe.src = url;
-
-      iframe.onload = function () {
-        var loader = win.document.getElementById("loader");
-        if (loader) {
-          loader.style.opacity = "0";
-          setTimeout(function () {
-            if (loader.parentNode) loader.parentNode.removeChild(loader);
-          }, 460);
-        }
-        iframe.style.opacity = "1";
-      };
-
-      win.document.body.style.margin = "0";
-      win.document.body.style.padding = "0";
-      win.document.body.style.overflow = "hidden";
-      win.document.body.appendChild(iframe);
     }
 
-    function addRipple(event) {
-      if (!event || !event.currentTarget) return;
-      var btn = event.currentTarget;
-      var rect = btn.getBoundingClientRect();
-      var size = Math.max(rect.width, rect.height);
-      var circle = document.createElement("span");
-      circle.className = "ripple";
-      circle.style.width = circle.style.height = size + "px";
-      circle.style.left = (event.clientX - rect.left - size / 2) + "px";
-      circle.style.top = (event.clientY - rect.top - size / 2) + "px";
-      btn.appendChild(circle);
-      setTimeout(function () { circle.remove(); }, 560);
-    }
+    // Individual Game Mappings
+    const openFNAF1 = () => openInIframe("FNAF 1", "1/index.html");
+    const openFNAF2 = () => openInIframe("FNAF 2", "2/index.html");
+    const openFNAF3 = () => openInIframe("FNAF 3", "3/index.html");
+    const openFNAF4 = () => openInIframe("FNAF 4", "4/index.html");
+    const openFNAFWorld = () => openInIframe("FNAF World", "w/index.html");
+    const openSisterLocation = () => openInIframe("Sister Location", "sl/index.html");
+    const openPizzeriaSimulator = () => openInIframe("Pizzeria Simulator", "ps/index.html");
+    const openUCN = () => openInIframe("UCN", "ucn/index.html");
 
-    function openFNAF1(e) {
-      addRipple(e);
-      openInIframe("1/index.html");
-    }
-
-    function openFNAF2(e) {
-      addRipple(e);
-      openInIframe("2/index.html");
-    }
-
-    function openFNAF3(e) {
-      addRipple(e);
-      openInIframe("3/index.html");
-    }
-
-    function openFNAF4(e) {
-      addRipple(e);
-      openInIframe("4/index.html");
-    }
-
-    function openFNAFWorld(e) {
-      addRipple(e);
-      openInIframe("w/index.html");
-    }
-
-    function openSisterLocation(e) {
-      addRipple(e);
-      openInIframe("sl/index.html");
-    }
-
-    function openPizzeriaSimulator(e) {
-      addRipple(e);
-      openInIframe("ps/index.html");
-    }
-
-    function openUCN(e) {
-      addRipple(e);
-      openInIframe("ucn/index.html");
-    }
+    // Handle Window Resize for Canvas
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
   </script>
 </body>
 </html>
