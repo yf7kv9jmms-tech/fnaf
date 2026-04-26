@@ -1,197 +1,326 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FNAF Launcher</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            background: #1a1a2e;
-            color: #eee;
-            gap: 15px;
-        }
-        h1 {
-            margin-bottom: 20px;
-        }
-        button {
-            padding: 15px 30px;
-            font-size: 18px;
-            background: #e94560;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 300px;
-            transition: 0.3s;
-        }
-        button:hover {
-            background: #ff6b6b;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FNAF Launcher</title>
+  <style>
+    :root {
+      --bg1: #0b1020;
+      --bg2: #161d38;
+      --bg3: #251548;
+      --text: #f3f6ff;
+      --muted: #b9c3e8;
+      --card: rgba(255, 255, 255, 0.08);
+      --card-border: rgba(255, 255, 255, 0.16);
+      --btnA: #e94560;
+      --btnB: #ff6b6b;
+      --btnC: #8b6dff;
+      --shadow: 0 22px 45px rgba(0, 0, 0, 0.42);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: "Segoe UI", Inter, Arial, sans-serif;
+      color: var(--text);
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      overflow-x: hidden;
+      background:
+        radial-gradient(900px 600px at 10% 10%, rgba(233, 69, 96, 0.18), transparent 60%),
+        radial-gradient(850px 650px at 90% 0%, rgba(139, 109, 255, 0.2), transparent 60%),
+        linear-gradient(150deg, var(--bg1), var(--bg2) 45%, var(--bg3));
+      animation: hueShift 16s ease-in-out infinite alternate;
+    }
+
+    @keyframes hueShift {
+      from { filter: hue-rotate(0deg); }
+      to { filter: hue-rotate(16deg); }
+    }
+
+    .orbs {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .orb {
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      filter: blur(50px);
+      opacity: 0.24;
+      animation: float 14s ease-in-out infinite;
+    }
+
+    .orb.one { background: #e94560; top: -70px; left: -70px; }
+    .orb.two { background: #8b6dff; top: 10%; right: -90px; animation-delay: -4s; }
+    .orb.three { background: #ff6b6b; bottom: -85px; left: 20%; animation-delay: -8s; }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(20px, -20px) scale(1.06); }
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      width: min(980px, 100%);
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 26px;
+      text-align: center;
+      transform: translateY(14px);
+      opacity: 0;
+      animation: appIn 700ms cubic-bezier(.2,.85,.2,1) forwards;
+    }
+
+    @keyframes appIn {
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 2.8vw, 2.5rem);
+      letter-spacing: 0.4px;
+    }
+
+    .subtitle {
+      margin: 8px 0 20px;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 12px;
+    }
+
+    .game-btn {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 13px;
+      padding: 14px 16px;
+      width: 100%;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--btnA), var(--btnB) 55%, var(--btnC));
+      transition: transform 0.18s ease, box-shadow 0.22s ease, filter 0.22s ease, border-color 0.22s ease;
+      animation: btnIn 650ms cubic-bezier(.2,.85,.2,1) both;
+    }
+
+    .game-btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, transparent, rgba(255,255,255,0.24), transparent);
+      transform: translateX(-120%);
+      transition: transform 0.55s ease;
+      pointer-events: none;
+    }
+
+    .game-btn:hover {
+      transform: translateY(-3px);
+      filter: brightness(1.07);
+      border-color: rgba(255, 255, 255, 0.36);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28);
+    }
+
+    .game-btn:hover::after {
+      transform: translateX(120%);
+    }
+
+    .game-btn:active {
+      transform: translateY(0) scale(0.995);
+    }
+
+    .game-btn:nth-child(1) { animation-delay: 0.06s; }
+    .game-btn:nth-child(2) { animation-delay: 0.12s; }
+    .game-btn:nth-child(3) { animation-delay: 0.18s; }
+    .game-btn:nth-child(4) { animation-delay: 0.24s; }
+    .game-btn:nth-child(5) { animation-delay: 0.30s; }
+    .game-btn:nth-child(6) { animation-delay: 0.36s; }
+    .game-btn:nth-child(7) { animation-delay: 0.42s; }
+    .game-btn:nth-child(8) { animation-delay: 0.48s; }
+
+    @keyframes btnIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      animation: ripple 550ms linear;
+      background: rgba(255, 255, 255, 0.35);
+      pointer-events: none;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(3.3);
+        opacity: 0;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div class="orbs" aria-hidden="true">
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+  </div>
+
+  <main class="app">
     <h1>FNAF Launcher</h1>
-    
-    <button onclick="openFNAF1()">Open FNAF 1</button>
-    <button onclick="openFNAF2()">Open FNAF 2</button>
-    <button onclick="openFNAF3()">Open FNAF 3</button>
-    <button onclick="openFNAF4()">Open FNAF 4</button>
-    <button onclick="openFNAFWorld()">Open FNAF World</button>
-    <button onclick="openSisterLocation()">Open Sister Location</button>
-    <button onclick="openPizzeriaSimulator()">Open Pizzeria Simulator (Lag Til After Minigame) </button>
-    <button onclick="openUCN()">Open Ultimate Custom Night</button>
+    <p class="subtitle">Pick a title to launch it in a popup iframe.</p>
 
-    <script>
-        function openFNAF1() {
-            var win = window.open();
-            if (!win) {
-                alert("Popup blocked! Please allow popups for this site.");
-                return;
-            }
-            var url = "1/index.html";
-            var iframe = win.document.createElement("iframe");
-            iframe.style.width = "100%";
-            iframe.style.height = "100%";
-            iframe.style.border = "none";
-            iframe.src = url;
-            win.document.body.style.margin = "0";
-            win.document.body.style.padding = "0";
-            win.document.body.style.overflow = "hidden";
-            win.document.body.appendChild(iframe);
-        }
+    <section class="grid">
+      <button class="game-btn" onclick="openFNAF1(event)">Open FNAF 1</button>
+      <button class="game-btn" onclick="openFNAF2(event)">Open FNAF 2</button>
+      <button class="game-btn" onclick="openFNAF3(event)">Open FNAF 3</button>
+      <button class="game-btn" onclick="openFNAF4(event)">Open FNAF 4</button>
+      <button class="game-btn" onclick="openFNAFWorld(event)">Open FNAF World</button>
+      <button class="game-btn" onclick="openSisterLocation(event)">Open Sister Location</button>
+      <button class="game-btn" onclick="openPizzeriaSimulator(event)">Open Pizzeria Simulator (Lag Til After Minigame)</button>
+      <button class="game-btn" onclick="openUCN(event)">Open Ultimate Custom Night</button>
+    </section>
 
-        function openFNAF2() {
-            var win = window.open();
-            if (!win) {
-                alert("Popup blocked! Please allow popups for this site.");
-                return;
-            }
-            var url = "2/index.html";
-            var iframe = win.document.createElement("iframe");
-            iframe.style.width = "100%";
-            iframe.style.height = "100%";
-            iframe.style.border = "none";
-            iframe.src = url;
-            win.document.body.style.margin = "0";
-            win.document.body.style.padding = "0";
-            win.document.body.style.overflow = "hidden";
-            win.document.body.appendChild(iframe);
-        }
+    <p class="note">If nothing opens, allow popups for this site.</p>
+  </main>
 
-        function openFNAF3() {
-            var win = window.open();
-            if (!win) {
-                alert("Popup blocked! Please allow popups for this site.");
-                return;
-            }
-            var url = "3/index.html";
-            var iframe = win.document.createElement("iframe");
-            iframe.style.width = "100%";
-            iframe.style.height = "100%";
-            iframe.style.border = "none";
-            iframe.src = url;
-            win.document.body.style.margin = "0";
-            win.document.body.style.padding = "0";
-            win.document.body.style.overflow = "hidden";
-            win.document.body.appendChild(iframe);
-        }
+  <script>
+    // Same method kept: window.open() -> create iframe -> set src.
+    function openInIframe(url) {
+      var win = window.open();
+      if (!win) {
+        alert("Popup blocked! Please allow popups for this site.");
+        return;
+      }
 
-        function openFNAF4() {
-            var win = window.open();
-            if (!win) {
-                alert("Popup blocked! Please allow popups for this site.");
-                return;
-            }
-            var url = "4/index.html";
-            var iframe = win.document.createElement("iframe");
-            iframe.style.width = "100%";
-            iframe.style.height = "100%";
-            iframe.style.border = "none";
-            iframe.src = url;
-            win.document.body.style.margin = "0";
-            win.document.body.style.padding = "0";
-            win.document.body.style.overflow = "hidden";
-            win.document.body.appendChild(iframe);
-        }
+      // Loading screen in popup before iframe fades in.
+      win.document.open();
+      win.document.write(
+        "<!DOCTYPE html><html><head><title>Loading...</title><meta charset='UTF-8'>" +
+        "<style>" +
+        "html,body{margin:0;height:100%;overflow:hidden;background:#0d1020;color:#f3f6ff;font-family:Segoe UI,Arial,sans-serif;}" +
+        ".loader{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;" +
+        "background:radial-gradient(circle at 25% 20%,#4c1f4a,transparent 55%),linear-gradient(145deg,#0b1020,#1a2140);" +
+        "transition:opacity .45s ease;z-index:10;}" +
+        ".spinner{width:54px;height:54px;border:4px solid rgba(255,255,255,.2);border-top-color:#ff7a92;border-radius:50%;animation:spin .9s linear infinite;}" +
+        ".txt{font-size:14px;opacity:.92;letter-spacing:.2px;}" +
+        "@keyframes spin{to{transform:rotate(360deg)}}" +
+        "iframe{width:100%;height:100%;border:none;opacity:0;transition:opacity .35s ease;}" +
+        "</style></head><body>" +
+        "<div id='loader' class='loader'><div class='spinner'></div><div class='txt'>Loading game...</div></div>" +
+        "</body></html>"
+      );
+      win.document.close();
 
-        function openFNAFWorld() {
-            var win = window.open();
-            if (!win) {
-                alert("Popup blocked! Please allow popups for this site.");
-                return;
-            }
-            var url = "w/index.html";
-            var iframe = win.document.createElement("iframe");
-            iframe.style.width = "100%";
-            iframe.style.height = "100%";
-            iframe.style.border = "none";
-            iframe.src = url;
-            win.document.body.style.margin = "0";
-            win.document.body.style.padding = "0";
-            win.document.body.style.overflow = "hidden";
-            win.document.body.appendChild(iframe);
-        }
+      var iframe = win.document.createElement("iframe");
+      iframe.style.width = "100%";
+      iframe.style.height = "100%";
+      iframe.style.border = "none";
+      iframe.src = url;
 
-        function openSisterLocation() {
-            var win = window.open();
-            if (!win) {
-                alert("Popup blocked! Please allow popups for this site.");
-                return;
-            }
-            var url = "sl/index.html";
-            var iframe = win.document.createElement("iframe");
-            iframe.style.width = "100%";
-            iframe.style.height = "100%";
-            iframe.style.border = "none";
-            iframe.src = url;
-            win.document.body.style.margin = "0";
-            win.document.body.style.padding = "0";
-            win.document.body.style.overflow = "hidden";
-            win.document.body.appendChild(iframe);
+      iframe.onload = function () {
+        var loader = win.document.getElementById("loader");
+        if (loader) {
+          loader.style.opacity = "0";
+          setTimeout(function () {
+            if (loader.parentNode) loader.parentNode.removeChild(loader);
+          }, 460);
         }
+        iframe.style.opacity = "1";
+      };
 
-        function openPizzeriaSimulator() {
-            var win = window.open();
-            if (!win) {
-                alert("Popup blocked! Please allow popups for this site.");
-                return;
-            }
-            var url = "ps/index.html";
-            var iframe = win.document.createElement("iframe");
-            iframe.style.width = "100%";
-            iframe.style.height = "100%";
-            iframe.style.border = "none";
-            iframe.src = url;
-            win.document.body.style.margin = "0";
-            win.document.body.style.padding = "0";
-            win.document.body.style.overflow = "hidden";
-            win.document.body.appendChild(iframe);
-        }
+      win.document.body.style.margin = "0";
+      win.document.body.style.padding = "0";
+      win.document.body.style.overflow = "hidden";
+      win.document.body.appendChild(iframe);
+    }
 
-        function openUCN() {
-            var win = window.open();
-            if (!win) {
-                alert("Popup blocked! Please allow popups for this site.");
-                return;
-            }
-            var url = "ucn/index.html";
-            var iframe = win.document.createElement("iframe");
-            iframe.style.width = "100%";
-            iframe.style.height = "100%";
-            iframe.style.border = "none";
-            iframe.src = url;
-            win.document.body.style.margin = "0";
-            win.document.body.style.padding = "0";
-            win.document.body.style.overflow = "hidden";
-            win.document.body.appendChild(iframe);
-        }
-    </script>
+    function addRipple(event) {
+      if (!event || !event.currentTarget) return;
+      var btn = event.currentTarget;
+      var rect = btn.getBoundingClientRect();
+      var size = Math.max(rect.width, rect.height);
+      var circle = document.createElement("span");
+      circle.className = "ripple";
+      circle.style.width = circle.style.height = size + "px";
+      circle.style.left = (event.clientX - rect.left - size / 2) + "px";
+      circle.style.top = (event.clientY - rect.top - size / 2) + "px";
+      btn.appendChild(circle);
+      setTimeout(function () { circle.remove(); }, 560);
+    }
+
+    function openFNAF1(e) {
+      addRipple(e);
+      openInIframe("1/index.html");
+    }
+
+    function openFNAF2(e) {
+      addRipple(e);
+      openInIframe("2/index.html");
+    }
+
+    function openFNAF3(e) {
+      addRipple(e);
+      openInIframe("3/index.html");
+    }
+
+    function openFNAF4(e) {
+      addRipple(e);
+      openInIframe("4/index.html");
+    }
+
+    function openFNAFWorld(e) {
+      addRipple(e);
+      openInIframe("w/index.html");
+    }
+
+    function openSisterLocation(e) {
+      addRipple(e);
+      openInIframe("sl/index.html");
+    }
+
+    function openPizzeriaSimulator(e) {
+      addRipple(e);
+      openInIframe("ps/index.html");
+    }
+
+    function openUCN(e) {
+      addRipple(e);
+      openInIframe("ucn/index.html");
+    }
+  </script>
 </body>
 </html>
